@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
 import joblib
-
+import os
 
 app = FastAPI(
     title="Receiver Balance Prediction API",
@@ -10,15 +10,14 @@ app = FastAPI(
     version="1.0"
 )
 
-
 # Load model and scaler
-model_path = "../models/best_model.pkl"
-scaler_path = "../models/scaler.pkl"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+MODEL_PATH = os.path.join(BASE_DIR, "best_model.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
 
-model = joblib.load(model_path)
-scaler = joblib.load(scaler_path)
-
+model = joblib.load(MODEL_PATH)
+scaler = joblib.load(SCALER_PATH)
 
 print("Model and scaler loaded successfully")
 
