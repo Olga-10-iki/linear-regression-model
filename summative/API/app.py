@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pandas as pd
 import joblib
@@ -10,7 +11,31 @@ app = FastAPI(
     version="1.0"
 )
 
+# -----------------------------
+# CORS Configuration
+# -----------------------------
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+# -----------------------------
 # Load model and scaler
+# -----------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_PATH = os.path.join(BASE_DIR, "best_model.pkl")
@@ -22,33 +47,27 @@ scaler = joblib.load(SCALER_PATH)
 print("Model and scaler loaded successfully")
 
 
+# -----------------------------
 # Input structure
+# -----------------------------
 class Transaction(BaseModel):
 
     amount: float
-
     sender_balance_before: float
-
     sender_balance_after: float
-
     receiver_balance_before: float
-
     transaction_type: int
-
     hour: int
-
     month_2026: int
-
     day_of_week: int
-
     device_type: int
-
     region: int
-
     is_fraud: int = 0
 
 
-
+# -----------------------------
+# Home Endpoint
+# -----------------------------
 @app.get("/")
 def home():
 
@@ -57,21 +76,16 @@ def home():
     }
 
 
-
-
+# -----------------------------
+# Prediction Endpoint
+# -----------------------------
 @app.post("/predict")
 def predict(transaction: Transaction):
 
+    # Convert request into DataFrame
+    data = pd.DataFrame([transaction.dict()])
 
-    # Convert request into dataframe
-
-    data = pd.DataFrame(
-        [transaction.dict()]
-    )
-
-
-    # Keep same training order
-
+    # Keep same feature order as training
     data = data[
         [
             "amount",
@@ -84,53 +98,28 @@ def predict(transaction: Transaction):
             "day_of_week",
             "device_type",
             "region",
-            "is_fraud"
+            "is_fraud",
         ]
     ]
 
-
-
     # Scale data
-
     scaled_data = scaler.transform(data)
 
+    # Make prediction
+    prediction = model.predict(scaled_data)
 
-
-    # Prediction
-
-    prediction = model.predict(
-        scaled_data
-    )
-
-
-    predicted_balance = round(
-        float(prediction[0]),
-        2
-    )
-
+    predicted_balance = round(float(prediction[0]), 2)
 
     # Fraud result
-
     if transaction.is_fraud == 0:
-
         fraud_status = "Safe"
-
         risk_level = "Low Risk"
-
     else:
-
         fraud_status = "Fraud Detected"
-
         risk_level = "High Risk"
 
-
-
     return {
-
         "predicted_receiver_balance_after": predicted_balance,
-
         "fraud_status": fraud_status,
-
-        "risk_level": risk_level
-
+        "risk_level": risk_level,
     }
