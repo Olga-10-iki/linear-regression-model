@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
 
+const Color darkGreen = Color(0xFF0C3B2E);
+const Color green = Color(0xFF6D9773);
+const Color brown = Color(0xFFBB8A52);
+const Color yellow = Color(0xFFFFBA00);
+
 void main() {
   runApp(const MyApp());
 }
@@ -14,10 +19,55 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'M-Pesa Balance Predictor',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-        ),
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF7F8F7),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: darkGreen,
+        ).copyWith(
+          primary: darkGreen,
+          secondary: green,
+          tertiary: brown,
+        ),
+
+        appBarTheme: const AppBarTheme(
+          backgroundColor: darkGreen,
+          foregroundColor: Colors.white,
+          centerTitle: true,
+          elevation: 3,
+        ),
+
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: yellow,
+            foregroundColor: darkGreen,
+            minimumSize: const Size(double.infinity, 55),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          labelStyle: const TextStyle(color: darkGreen),
+          prefixIconColor: green,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(color: green),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(15),
+            borderSide: const BorderSide(
+              color: yellow,
+              width: 2,
+            ),
+          ),
+        ),
       ),
       home: const PredictionPage(),
     );
@@ -102,7 +152,7 @@ class _PredictionPageState extends State<PredictionPage> {
     }
   }
 
-    String getRegionName(int value) {
+  String getRegionName(int value) {
     switch (value) {
       case 1:
         return "Nairobi";
@@ -127,7 +177,10 @@ class _PredictionPageState extends State<PredictionPage> {
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon),
+          prefixIcon: Icon(
+            icon,
+            color: green,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -147,6 +200,8 @@ class _PredictionPageState extends State<PredictionPage> {
       child: DropdownButtonFormField<int>(
         value: value,
         decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.white,
           labelText: label,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
@@ -161,19 +216,30 @@ class _PredictionPageState extends State<PredictionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFFF7F8F7),
+
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text("M-Pesa Balance Predictor"),
+        title: const Text(
+          "M-Pesa Balance Predictor",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             Card(
-              elevation: 5,
+              color: Colors.white,
+              elevation: 8,
+              shadowColor: green.withOpacity(0.3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
                     const Text(
@@ -181,10 +247,11 @@ class _PredictionPageState extends State<PredictionPage> {
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: darkGreen,
                       ),
                     ),
 
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 20),
 
                     inputField(
                       "Amount (KSh)",
@@ -209,8 +276,7 @@ class _PredictionPageState extends State<PredictionPage> {
                       Icons.account_balance,
                       receiverBeforeController,
                     ),
-
-                    dropdownField(
+                                        dropdownField(
                       "Transaction Type",
                       transactionType,
                       const [
@@ -290,36 +356,83 @@ class _PredictionPageState extends State<PredictionPage> {
 
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 55,
               child: ElevatedButton(
                 onPressed: loading ? null : makePrediction,
                 child: loading
-                    ? const CircularProgressIndicator()
-                    : const Text(
-                        "Predict Balance",
-                        style: TextStyle(fontSize: 18),
+                    ? const CircularProgressIndicator(
+                        color: darkGreen,
+                      )
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.analytics),
+                          SizedBox(width: 10),
+                          Text(
+                            "Predict Balance",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(height: 30),
 
             if (result.isNotEmpty)
               Card(
-                color: Colors.green.shade50,
-                elevation: 5,
+                color: const Color(0xFFEAF4ED),
+                elevation: 8,
+                shadowColor: green.withOpacity(0.25),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Text(
-                    result,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: Column(
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: green,
+                        size: 45,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      const Text(
+                        "Prediction Result",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: darkGreen,
+                        ),
+                      ),
+
+                      const Divider(
+                        thickness: 1.2,
+                        color: brown,
+                        height: 25,
+                      ),
+
+                      Text(
+                        result,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          height: 1.6,
+                          color: darkGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+
+            const SizedBox(height: 30),
           ],
         ),
       ),
