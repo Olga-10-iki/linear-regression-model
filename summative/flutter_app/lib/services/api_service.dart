@@ -1,17 +1,10 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static String get baseUrl {
-    if (kIsWeb) {
-      // Chrome / Edge / Web
-      return "https://receiver-balance-api.onrender.com";
-    } else {
-      // Android Emulator
-      return "http://10.0.2.2:8000";
-    }
-  }
+  // Render API URL (works on Android and Web)
+  static const String baseUrl =
+      "https://receiver-balance-api.onrender.com";
 
   static Future<Map<String, dynamic>> predictBalance({
     required double amount,
@@ -49,7 +42,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception("Failed to connect: ${response.body}");
+      throw Exception(
+        "Server Error (${response.statusCode}): ${response.body}",
+      );
     }
   }
 }
