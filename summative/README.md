@@ -217,10 +217,9 @@ Supported platforms:
 
 **Project Demonstration**
 
-```
- [https://youtu.be/xC-R6IpYMRw]
 
-```
+ - [https://youtu.be/xC-R6IpYMRw]
+
 
 ---
 
