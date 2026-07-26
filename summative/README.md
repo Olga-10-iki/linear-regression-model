@@ -1,4 +1,4 @@
-# 📱 M-Pesa Receiver Balance Prediction System
+#  M-Pesa Receiver Balance Prediction System
 
 ## Author
 
@@ -218,7 +218,8 @@ Supported platforms:
 **Project Demonstration**
 
 ```
-https://youtu.be/your-video-link
+https://youtu.be/xC-R6IpYMRw
+
 ```
 
 ---
